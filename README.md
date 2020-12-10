@@ -57,13 +57,11 @@ pubsub.subscribe('locationUpdate', (x) => {
     console.log('locationUpdate: ', x);
 });
 
-pubsub
-	.publish('locationChange', "100")
+pubsub.publish('locationChange', "100")
 	.then((x) => console.log("values1: ", x))
     .catch((e) => console.log('error: ', e))
     
-pubsub
-	.publish('locationUpdate', "102")
+pubsub.publish('locationUpdate', "102")
 	.then((x) => console.log("values2: ", x))
     .catch((e) => console.log('error: ', e))
 ```
@@ -85,13 +83,11 @@ pubsub
                 console.log('locationUpdate: ', x);
             });
 
-            pubsub
-                .publish('locationChange', "100")
+            pubsub.publish('locationChange', "100")
                 .then(function(x){console.log("values1: ", x)})
                 .catch(function(e){console.log('error: ', e)})
                 
-            pubsub
-                .publish('locationUpdate', "102")
+            pubsub.publish('locationUpdate', "102")
                 .then(function(x){console.log("values2: ", x)})
                 .catch(function(e){console.log('error: ', e)})
         </script>
