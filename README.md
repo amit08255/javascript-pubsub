@@ -77,18 +77,20 @@ pubsub.publish('locationUpdate', "102")
         <script>
             pubsub.subscribe('locationChange', function(x){
                 console.log('locationChange: ', x);
+                return x * 2;
             });
 
             pubsub.subscribe('locationUpdate', function(x){
                 console.log('locationUpdate: ', x);
+                return x * 3;
             });
 
             pubsub.publish('locationChange', "100")
-                .then(function(x){console.log("values1: ", x)})
+                .then(function(x){console.log("100*2 = ", x)})
                 .catch(function(e){console.log('error: ', e)})
                 
             pubsub.publish('locationUpdate', "102")
-                .then(function(x){console.log("values2: ", x)})
+                .then(function(x){console.log("102*3 = ", x)})
                 .catch(function(e){console.log('error: ', e)})
         </script>
     </body>
@@ -109,17 +111,33 @@ Allows subscribing to the event and executing the callback when an event is publ
 
 Type: `string`
 
-Event published.
+Event to subscribe to.
 
 #### callback
 
 Type: `function`
 
-Callback to be executed when the publish event is received.
+Callback to be executed when the publish event is received. The data returned by this function will be passed to promise resolve callback, whereas error occurred will be passed to promise reject callback. If you intentionally want to pass error from subscriber callback use code - `return Promise.resolve();`.
 
-### publish(eventName, options)
+### publish(eventName, data)
 
-Returns a promise, that defines the decision of subscribers.
+Returns a promise, that defines the decision of subscriber. It can only be used with single subscriber, if multiple subscribers are added for same event, first one is used.
+
+#### eventName
+
+Type: `string`
+
+Event published.
+
+#### data
+
+Type: `any`
+
+Data to be passed to subscriber callback.
+
+### publishAll(eventName, options, data)
+
+Returns a promise, that defines the decision of subscribers. It can be used with multiple subscribers subscribing to same event.
 
 #### eventName
 
@@ -136,6 +154,12 @@ Options to be passed while publishing to an event.
 ##### options.promiseMethod
 
 Type: `string`
+
+#### data
+
+Type: `any`
+
+Data to be passed to subscriber callback.
 
 Method to be applied at the collection of promises such as `all`, `any` etc.
 
