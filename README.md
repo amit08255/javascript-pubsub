@@ -17,7 +17,6 @@
 
 * [About the Project](#about-the-project)
   * [Built With](#built-with)
-* [Getting Started](#getting-started)
 * [Usage](#usage)
 * [API](#api)
 * [Contributing](#contributing)
@@ -27,18 +26,12 @@
 
 <!-- ABOUT THE PROJECT -->
 ## About The Project
-This is simple library designed with NextJS and ReactJS demonstrate how to handle session data between pages with client-side routing.
+This is simple library designed for writing maintainable code in JavaScript using PubSub pattern. This library is designed to work with both Node.js and browser without issue. PubSub is a messaging pattern is a design pattern that provides a framework for exchanging messages that allows for loose coupling and scaling between the sender of messages (publishers) and receivers (subscribers) on topics they subscribe to.
+In the pub/sub messaging pattern, publishers do not send messages directly to all subscribers; instead, messages are sent via brokers. Publishers do not know who the subscribers are or to which (if any) topics they subscribe. This means publisher and subscriber operations can operate independently of each other. This is known as loose coupling and removes service dependencies that would otherwise be there in traditional messaging patterns.
 
 ### Built With
 This library is designed with technologies listed below - 
 * [JavaScript](https://www.javascript.com/)
-
-
-<!-- GETTING STARTED -->
-## Getting Started
-
-This library is designed to work with both Node.js and browser without issue. PubSub is a messaging pattern is a design pattern that provides a framework for exchanging messages that allows for loose coupling and scaling between the sender of messages (publishers) and receivers (subscribers) on topics they subscribe to.
-In the pub/sub messaging pattern, publishers do not send messages directly to all subscribers; instead, messages are sent via brokers. Publishers do not know who the subscribers are or to which (if any) topics they subscribe. This means publisher and subscriber operations can operate independently of each other. This is known as loose coupling and removes service dependencies that would otherwise be there in traditional messaging patterns.
 
 
 <!-- USAGE EXAMPLES -->
