@@ -5,7 +5,7 @@
   <h1 align="center">JavaScript PubSub</h1>
 
   <p align="center">
-    Small and fast JavaScript PubSub library designed for writing maintainable and code in JavaScript.
+    Small and fast JavaScript PubSub library designed for writing maintainable and decoupled code in JavaScript.
     <br />
   </p>
 </p>
