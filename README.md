@@ -127,7 +127,7 @@ Event to subscribe to.
 
 Type: `function`
 
-Callback to be executed when the publish event is received. The data returned by this function will be passed to promise resolve callback, whereas error occurred will be passed to promise reject callback. If you intentionally want to pass error from subscriber callback use code - `return Promise.reject("error data");`.
+Callback to be executed when the publish event is received. Data passed with `publish` and `publishAll` is passed to this function as parameter. The data returned by this function can be accessed using promise resolve callback, whereas error occurred can be accessed using promise reject callback. If you intentionally want to pass error from subscriber callback use code - `return Promise.reject("error data");`.
 
 ### publish(eventName, data)
 
