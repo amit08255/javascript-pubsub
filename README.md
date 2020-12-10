@@ -49,21 +49,30 @@ In the pub/sub messaging pattern, publishers do not send messages directly to al
 ```js
 const pubsub = require('./index');
 
-pubsub.subscribe('locationChange', (x) => {
-    console.log('locationChange: ', x);
+pubsub.subscribe('locationChange', function(x){
+    if(typeof x !== 'number'){
+        return Promise.reject("Invalid data type");
+    }
+
+    return x * 2;
 });
 
-pubsub.subscribe('locationUpdate', (x) => {
+pubsub.subscribe('locationUpdate', function(x){
     console.log('locationUpdate: ', x);
+    return x * 3;
 });
+
+pubsub.publish('locationChange', 100)
+    .then(function(x){console.log("100*2 = ", x)})
+    .catch(function(e){console.log('error: ', e)})
 
 pubsub.publish('locationChange', "100")
-	.then((x) => console.log("values1: ", x))
-    .catch((e) => console.log('error: ', e))
+    .then(function(x){console.log("100*2 = ", x)})
+    .catch(function(e){console.log('error: ', e)})
     
-pubsub.publish('locationUpdate', "102")
-	.then((x) => console.log("values2: ", x))
-    .catch((e) => console.log('error: ', e))
+pubsub.publish('locationUpdate', 102)
+    .then(function(x){console.log("102*3 = ", x)})
+    .catch(function(e){console.log('error: ', e)})
 ```
 
 ### Browser example -
@@ -85,11 +94,11 @@ pubsub.publish('locationUpdate', "102")
                 return x * 3;
             });
 
-            pubsub.publish('locationChange', "100")
+            pubsub.publish('locationChange', 100)
                 .then(function(x){console.log("100*2 = ", x)})
                 .catch(function(e){console.log('error: ', e)})
                 
-            pubsub.publish('locationUpdate', "102")
+            pubsub.publish('locationUpdate', 102)
                 .then(function(x){console.log("102*3 = ", x)})
                 .catch(function(e){console.log('error: ', e)})
         </script>
