@@ -50,6 +50,7 @@ In the pub/sub messaging pattern, publishers do not send messages directly to al
 const pubsub = require('./index');
 
 pubsub.subscribe('locationChange', function(x){
+    console.log('locationChange: ', x);
     if(typeof x !== 'number'){
         return Promise.reject("Invalid data type");
     }
