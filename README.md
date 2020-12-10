@@ -168,5 +168,5 @@ Distributed under the Apache License 2.0. See `LICENSE` for more information.
 
 Amit Kumar - amitcute3@gmail.com
 
-Project Link: [https://github.com/amit08255/nextjs-passport](https://github.com/amit08255/nextjs-passport)
+Project Link: [https://github.com/amit08255/javascript-pubsub](https://github.com/amit08255/javascript-pubsub)
 
