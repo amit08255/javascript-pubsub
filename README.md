@@ -17,6 +17,7 @@
 
 * [About the Project](#about-the-project)
   * [Built With](#built-with)
+* [Getting Started](#getting-started)
 * [Usage](#usage)
 * [API](#api)
 * [Contributing](#contributing)
@@ -32,6 +33,12 @@ In the pub/sub messaging pattern, publishers do not send messages directly to al
 ### Built With
 This library is designed with technologies listed below - 
 * [JavaScript](https://www.javascript.com/)
+
+
+<!-- GETTING STARTED -->
+## Getting Started
+
+Using this library is simple, you just have to add/import this library in your project. The simple technique is to add/import all modules which specify subscribers on your app entrypoint. Other modules do not need to add/import them, you simply has to publish events, subscribers callback will be called as event gets published. This technique keeps only your app entrypoint coupled with subscriber modules while keeping rest of your app decoupled.
 
 
 <!-- USAGE EXAMPLES -->
@@ -122,6 +129,15 @@ Type: `function`
 
 Callback to be executed when the publish event is received. Data passed with `publish` and `publishAll` is passed to this function as parameter. The data returned by this function can be accessed using promise resolve callback, whereas error occurred can be accessed using promise reject callback. If you intentionally want to pass error from subscriber callback use code - `return Promise.reject("error data");`.
 
+### clearSubscribers(eventName)
+
+Clear all subscribers or subscribers linked to a specific channel/event.
+
+#### eventName
+
+Type: `string`
+
+Optional. When provided, it clear subscribers linked to specific channel/event. Otherwise, it clears all subscriber registered.
 ### publish(eventName, data)
 
 Returns a promise, that defines the decision of subscriber. It can only be used with single subscriber, if multiple subscribers are added for same event, first one is used.

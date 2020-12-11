@@ -16,6 +16,13 @@
         }
     
         return {
+            clearSubscribers: async function(channel = null){
+                if(channel){
+                    return channels[channel] = [];
+                }
+
+                channels = [];
+            },
             publish: async function(channel, data) {
                 let channels = getSubscribers(channel);
     
@@ -37,7 +44,7 @@
                 }
                 return Promise.resolve();
             },
-            subscribe: function(channel, callback) {
+            subscribe: async function(channel, callback) {
                 setSubscriber(channel, callback);
             }
         }
