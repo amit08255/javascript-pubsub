@@ -25,6 +25,8 @@ npm install
 
 ### Available commands -
 
-**npm run dev** - Run development server. Default server location - ```http://localhost:3000```
-**npm run build** - Build server. Required before starting production server
-**npm start** - Run production server. Default server location - ```http://localhost:3000```
+* **npm run dev** - Run development server. Default server location - ```http://localhost:3000```
+
+* **npm run build** - Build server. Required before starting production server
+
+* **npm start** - Run production server. Default server location - ```http://localhost:3000```
