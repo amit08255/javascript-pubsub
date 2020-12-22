@@ -120,11 +120,34 @@ pubsub.subscribe('locationChange', function(x){
 });
 ```
 
+#### components/Card/index.js
+
+```js
+import React from 'react';
+import pubsub from '../../pubsub';
+
+const Card = ({title, children}) => (
+    <div style={{'backgroundColor': 'blue'}}>
+        <div style={{'backgroundColor': 'white', 'color': 'blue', 'padding': '20px', 'border': '5px solid red'}}>
+            <h3>{title}</h3>
+        </div>
+        {children}
+    </div>
+);
+
+pubsub.subscribe('components/card', function(){
+    return Card;
+});
+
+export default Card;
+```
+
 #### pages/_app.jsx
 
 ```js
 import React from 'react';
 import '../utilities/demo';
+import '../components/Card';
 
 function MyApp({ Component, pageProps }) {
     return <Component {...pageProps} />
@@ -139,6 +162,8 @@ export default MyApp;
 import React, {useEffect} from 'react';
 import pubsub from '../pubsub';
 
+const Card = pubsub.publishSync('components/card');
+
 const Homepage = () => {
     useEffect(() => {
         pubsub.publishQueue('locationChange', function(x){console.log("100*2 = ", x)}, 100)
@@ -146,7 +171,9 @@ const Homepage = () => {
     }, []);
 
     return (
-        <div>Hello </div>
+        <Card title="Amit">
+            <p>Hello world</p>
+        </Card>
     )
 };
 
