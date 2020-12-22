@@ -107,6 +107,52 @@ pubsub.publish('locationUpdate', 102)
 </html>
 ```
 
+### Next.js example -
+
+#### utilities/demo/index.js
+
+```js
+import pubsub from '../pubsub';
+
+pubsub.subscribe('locationChange', function(x){
+    console.log('locationChange: ', x);
+    return x * 2;
+});
+```
+
+#### pages/_app.jsx
+
+```js
+import React from 'react';
+import '../utilities/demo';
+
+function MyApp({ Component, pageProps }) {
+    return <Component {...pageProps} />
+}
+
+export default MyApp;
+```
+
+#### pages/index.jsx
+
+```js
+import React, {useEffect} from 'react';
+import pubsub from '../pubsub';
+
+const Homepage = () => {
+    useEffect(() => {
+        pubsub.publishQueue('locationChange', function(x){console.log("100*2 = ", x)}, 100)
+        pubsub.publishQueue('locationChange', function(x){console.log("300*2 = ", x)}, 300)
+    }, []);
+
+    return (
+        <div>Hello </div>
+    )
+};
+
+export default Homepage;
+```
+
 <!-- API -->
 
 ## API
@@ -147,6 +193,28 @@ Returns a promise, that defines the decision of subscriber. It can only be used 
 Type: `string`
 
 Event published.
+
+#### data
+
+Type: `any`
+
+Data to be passed to subscriber callback.
+
+### publishQueue(eventName, callback, data)
+
+This option is best for conditions when you want your publisher to be executed only when subscriber is added, such as - Next.js, React.js and React.js with SSR. In conditions like - Next.js there are times publisher is executed before subscriber is added such as when you are adding subscriber in *_app* page and publishing event in *index* page, the *index* page code will be executed first and page in *_app* will be executed after it, so you would like your publisher to wait until subscriber is added. It can only be used with single subscriber, if multiple subscribers are added for same event, first one is used. This option allows you to create future publisher which only executes when a subscriber is linked to event. If no subscriber is added to event, the callback is added to queue and is executed immediately after a subscriber is linked. Once queue is executed, it is cleared. Data returned by subscriber callback is passed to publisher callback function. The queue is executed asynchronously.
+
+#### eventName
+
+Type: `string`
+
+Event to be published.
+
+#### callback
+
+Type: `function`
+
+Callback function to be executed after subscriber callback is executed. The data passed from subscriber callback is passed back to this callback function.
 
 #### data
 

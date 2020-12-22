@@ -4,6 +4,7 @@
 
     function Pubsub() {
         let channels = {};
+        const queue = {};
 
         function getSubscribers(channel) {
             channels[channel] = channels[channel] || [];
@@ -13,6 +14,23 @@
         function setSubscriber(channel, callback) {
             getSubscribers(channel);
             channels[channel].push(callback);
+        }
+
+        function getQueue(channel) {
+            queue[channel] = queue[channel] || [];
+            return queue[channel];
+        }
+
+        function clearQueue(channel) {
+            queue[channel] = [];
+        }
+
+        function setQueue(channel, callback, data) {
+            getQueue(channel);
+            queue[channel].push({
+                callback,
+                data,
+            });
         }
 
         return {
@@ -53,8 +71,33 @@
                 }
                 return Promise.resolve();
             },
+            async publishQueue(channel, callback = null, data = null) {
+                const channelList = getSubscribers(channel);
+
+                if (callback && data) {
+                    setQueue(channel, callback, data);
+                }
+
+                if (channelList.length > 0) {
+                    const subscriberFunc = channelList[0];
+                    const queueList = getQueue(channel);
+
+                    if (queueList.length < 1) {
+                        return;
+                    }
+
+                    queueList.map(async (queueObj) => {
+                        const result = subscriberFunc(queueObj.data);
+                        queueObj.callback(result);
+                        return null;
+                    });
+
+                    clearQueue(channel);
+                }
+            },
             async subscribe(channel, callback) {
                 setSubscriber(channel, callback);
+                this.publishQueue(channel);
             },
         };
     }
