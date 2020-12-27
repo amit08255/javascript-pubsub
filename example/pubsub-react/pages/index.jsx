@@ -5,8 +5,14 @@ const Card = pubsub.publishSync('components/card');
 
 const Homepage = () => {
     useEffect(() => {
-        pubsub.publishQueue('locationChange', function(x){console.log("100*2 = ", x)}, 100)
-        pubsub.publishQueue('locationChange', function(x){console.log("300*2 = ", x)}, 300)
+        pubsub.publish('locationChange', function(error, x){
+            console.log("error: ", error);
+            console.log("Data should be null: ", x)
+        }, null);
+
+        pubsub.publish('locationChange', function(_error, x){
+            console.log("300*2 = ", x)
+        }, 300);
     }, []);
 
     return (

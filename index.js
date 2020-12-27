@@ -33,6 +33,20 @@
             });
         }
 
+        async function queueExecutor(subscriber, queueObj) {
+            return subscriber(queueObj.data);
+        }
+
+        async function queueHandler(subscriber, queueObj) {
+            const promise = queueExecutor(subscriber, queueObj);
+
+            promise.then((result) => {
+                queueObj.callback(null, result);
+            }).catch((err) => {
+                queueObj.callback(err, null);
+            });
+        }
+
         return {
             async clearSubscribers(channel = null) {
                 if (channel) {
@@ -41,14 +55,8 @@
 
                 channels = [];
             },
-            async publish(channel, data) {
-                const channelList = getSubscribers(channel);
-
-                if (channelList.length > 0) {
-                    return channelList[0](data);
-                }
-
-                return Promise.resolve();
+            async clearTaskQueue(channel) {
+                clearQueue(channel);
             },
             publishSync(channel, data) {
                 const channelList = getSubscribers(channel);
@@ -59,45 +67,30 @@
 
                 return undefined;
             },
-            async publishAll(channel, config, data) {
-                const configData = config || {
-                    promiseMethod: 'all',
-                };
+            async publish(channel, callback = null, data = null) {
                 const channelList = getSubscribers(channel);
+                const queueList = getQueue(channel);
 
-                if (channelList.length > 0) {
-                    const promises = channelList.map((chan) => chan(data));
-                    return Promise[configData.promiseMethod](promises);
-                }
-                return Promise.resolve();
-            },
-            async publishQueue(channel, callback = null, data = null) {
-                const channelList = getSubscribers(channel);
-
-                if (callback && data) {
+                if (callback) {
                     setQueue(channel, callback, data);
                 }
 
-                if (channelList.length > 0) {
+                if (channelList.length > 0 && queueList.length > 0) {
                     const subscriberFunc = channelList[0];
-                    const queueList = getQueue(channel);
-
-                    if (queueList.length < 1) {
-                        return;
-                    }
 
                     queueList.map(async (queueObj) => {
-                        const result = subscriberFunc(queueObj.data);
-                        queueObj.callback(result);
-                        return null;
+                        return queueHandler(subscriberFunc, queueObj);
                     });
 
                     clearQueue(channel);
+                    return true;
                 }
+
+                return false;
             },
             async subscribe(channel, callback) {
                 setSubscriber(channel, callback);
-                this.publishQueue(channel);
+                this.publish(channel);
             },
         };
     }

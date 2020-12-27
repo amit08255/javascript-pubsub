@@ -52,7 +52,7 @@ const pubsub = require('./index');
 pubsub.subscribe('locationChange', function(x){
     console.log('locationChange: ', x);
     if(typeof x !== 'number'){
-        return Promise.reject("Invalid data type");
+        generateErrorNow();
     }
 
     return x * 2;
@@ -63,17 +63,14 @@ pubsub.subscribe('locationUpdate', function(x){
     return x * 3;
 });
 
-pubsub.publish('locationChange', 100)
-    .then(function(x){console.log("100*2 = ", x)})
-    .catch(function(e){console.log('error: ', e)})
-
-pubsub.publish('locationChange', "100")
-    .then(function(x){console.log("100*2 = ", x)})
-    .catch(function(e){console.log('error: ', e)})
+pubsub.publish('locationChange', function(error, x){
+    console.log("Error: ", error);
+    console.log("Data should be null: ", x);
+}, "102");
     
-pubsub.publish('locationUpdate', 102)
-    .then(function(x){console.log("102*3 = ", x)})
-    .catch(function(e){console.log('error: ', e)})
+pubsub.publish('locationUpdate', function(_error, x){
+    console.log("102*3 = ", x)
+}, 102);
 ```
 
 ### Browser example -
@@ -95,13 +92,13 @@ pubsub.publish('locationUpdate', 102)
                 return x * 3;
             });
 
-            pubsub.publish('locationChange', 100)
-                .then(function(x){console.log("100*2 = ", x)})
-                .catch(function(e){console.log('error: ', e)})
+            pubsub.publish('locationChange', function(_error, x){
+                console.log("100*2 = ", x)
+            }, 100);
                 
-            pubsub.publish('locationUpdate', 102)
-                .then(function(x){console.log("102*3 = ", x)})
-                .catch(function(e){console.log('error: ', e)})
+            pubsub.publish('locationUpdate', function(_error, x){
+                console.log("102*3 = ", x)
+            }, 102);
         </script>
     </body>
 </html>
@@ -116,6 +113,10 @@ import pubsub from '../pubsub';
 
 pubsub.subscribe('locationChange', function(x){
     console.log('locationChange: ', x);
+    if(typeof x !== 'number'){
+        generateErrorNow();
+    }
+
     return x * 2;
 });
 ```
@@ -166,8 +167,14 @@ const Card = pubsub.publishSync('components/card');
 
 const Homepage = () => {
     useEffect(() => {
-        pubsub.publishQueue('locationChange', function(x){console.log("100*2 = ", x)}, 100)
-        pubsub.publishQueue('locationChange', function(x){console.log("300*2 = ", x)}, 300)
+        pubsub.publish('locationChange', function(error, x){
+            console.log("error: ", error);
+            console.log("Data should be null: ", x)
+        }, null);
+
+        pubsub.publish('locationChange', function(_error, x){
+            console.log("300*2 = ", x)
+        }, 300);
     }, []);
 
     return (
@@ -206,52 +213,39 @@ Callback to be executed when the publish event is received. Data passed with `pu
 
 Clear all subscribers or subscribers linked to a specific channel/event.
 
+### clearTaskQueue(eventName)
+
+Clear all task in queues linked to a specific channel/event.
+
 #### eventName
 
 Type: `string`
 
 Optional. When provided, it clear subscribers linked to specific channel/event. Otherwise, it clears all subscriber registered.
-### publish(eventName, data)
+### publish(eventName, callback, data)
 
-Returns a promise, that defines the decision of subscriber. It can only be used with single subscriber, if multiple subscribers are added for same event, first one is used.
+Returns a promise with boolean value, that specifies whether the task is executing or in queue waiting for subscriber. If returned value is `true`, task is being executed otherwise task is waiting for its subscriber. It can only be used with single subscriber, if multiple subscribers are added for same event, first one is used.
 
 #### eventName
 
 Type: `string`
 
 Event published.
-
-#### data
-
-Type: `any`
-
-Data to be passed to subscriber callback.
-
-### publishQueue(eventName, callback, data)
-
-This option is best for conditions when you want your publisher to be executed only when subscriber is added, such as - Next.js, React.js and React.js with SSR. In conditions like - Next.js there are times publisher is executed before subscriber is added such as when you are adding subscriber in *_app* page and publishing event in *index* page, the *index* page code will be executed first and page in *_app* will be executed after it, so you would like your publisher to wait until subscriber is added. It can only be used with single subscriber, if multiple subscribers are added for same event, first one is used. This option allows you to create future publisher which only executes when a subscriber is linked to event. If no subscriber is added to event, the callback is added to queue and is executed immediately after a subscriber is linked. Once queue is executed, it is cleared. Data returned by subscriber callback is passed to publisher callback function. The queue is executed asynchronously.
-
-#### eventName
-
-Type: `string`
-
-Event to be published.
 
 #### callback
 
 Type: `function`
 
-Callback function to be executed after subscriber callback is executed. The data passed from subscriber callback is passed back to this callback function.
-
+Callback function to get result after task execution. Callback function should have two parameters, where first one is `error` and second one is `response`.
 #### data
 
 Type: `any`
 
 Data to be passed to subscriber callback.
 
-### publishAll(eventName, options, data)
+### publishSync(eventName, data)
 
-Returns a promise, that defines the decision of subscribers. It can be used with multiple subscribers subscribing to same event.
+Run a task synchronously. Returns data provided by subscriber callback after task execution. When no subscriber is found, returns undefined. It can only be used with single subscriber, if multiple subscribers are added for same event, first one is used.
 
 #### eventName
 
@@ -259,23 +253,11 @@ Type: `string`
 
 Event published.
 
-#### options
-
-Type: `object`
-
-Options to be passed while publishing to an event.
-
-##### options.promiseMethod
-
-Type: `string`
-
 #### data
 
 Type: `any`
 
 Data to be passed to subscriber callback.
-
-Method to be applied at the collection of promises such as `all`, `any` etc.
 
 <!-- CONTRIBUTING -->
 ## Contributing
