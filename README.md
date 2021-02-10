@@ -172,7 +172,7 @@ const Homepage = () => {
             console.log("Data should be null: ", x)
         }, null);
 
-        pubsub.publish('locationChange', function(_error, x){
+        pubsub.withDebugging('locationChange').publish('locationChange', function(_error, x){
             console.log("300*2 = ", x)
         }, 300);
     }, []);
@@ -258,6 +258,31 @@ Event published.
 Type: `any`
 
 Data to be passed to subscriber callback.
+
+### withDebugging(eventName)
+
+Enable debugging for event/channel which displays all communications such as subscriber is executed or failed. It returns pubsub object.
+
+#### eventName
+
+Type: `string`
+
+Event published.
+
+### endDebugging(eventName)
+
+Disable debugging for event/channel. It returns pubsub object.
+
+#### eventName
+
+Type: `string`
+
+Event published.
+
+### clearDebugger()
+
+Clear all debugging. It returns pubsub object.
+
 
 <!-- CONTRIBUTING -->
 ## Contributing

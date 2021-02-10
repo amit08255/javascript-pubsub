@@ -5,14 +5,20 @@ const Card = pubsub.publishSync('components/card');
 
 const Homepage = () => {
     useEffect(() => {
-        pubsub.publish('locationChange', function(error, x){
-            console.log("error: ", error);
+        const pr1 = pubsub.publish('locationChange', function(error, x){
+            console.log("publish error: ", error);
             console.log("Data should be null: ", x)
         }, null);
 
-        pubsub.publish('locationChange', function(_error, x){
+        const pr2 = pubsub.withDebugging('locationChange').publish('locationChange', function(_error, x){
             console.log("300*2 = ", x)
         }, 300);
+
+        pr1.then((c) => {
+            console.log("ch1: ", c);
+        }).catch((err) => {
+            console.log("ee: ", err);
+        })
     }, []);
 
     return (

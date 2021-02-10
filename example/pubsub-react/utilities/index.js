@@ -3,6 +3,7 @@
     let pubsubInstance = null;
 
     function Pubsub() {
+        let debug = {};
         let channels = {};
         const queue = {};
 
@@ -33,36 +34,67 @@
             });
         }
 
+        function setDebugger(channel, value){
+            debug[channel] = value;
+        }
+
+        async function logDebugger(channel, ...args){
+            if(debug[channel] !== true){
+                return;
+            }
+
+            console.log('[*] pubsub: ', channel, ...args);
+        }
+
         async function queueExecutor(subscriber, queueObj) {
             return subscriber(queueObj.data);
         }
 
-        async function queueHandler(subscriber, queueObj) {
+        async function queueHandler(subscriber, queueObj, channel) {
+            logDebugger(channel, 'queueHandler executing subscriber', '\nparams: ', queueObj.data);
             const promise = queueExecutor(subscriber, queueObj);
 
             promise.then((result) => {
+                logDebugger(channel, 'queueHandler subscriber finished', '\nparams: ', queueObj.data, '\nresult: ', result);
                 queueObj.callback(null, result);
             }).catch((err) => {
+                logDebugger(channel, 'queueHandler subscriber failed', '\nparams: ', queueObj.data, '\nerror: ', err);
                 queueObj.callback(err, null);
             });
         }
 
         return {
+            withDebugging(channel){
+                setDebugger(channel, true);
+                return this;
+            },
+            endDebugging(channel){
+                setDebugger(channel, false);
+                return this;
+            },
+            clearDebugger(){
+                debug = {};
+                return this;
+            },
             async clearSubscribers(channel = null) {
                 if (channel) {
+                    logDebugger(channel, 'clearing subscribers');
                     channels[channel] = [];
                 }
 
                 channels = [];
             },
             async clearTaskQueue(channel) {
+                logDebugger(channel, 'clearing task queue');
                 clearQueue(channel);
             },
             publishSync(channel, data) {
                 const channelList = getSubscribers(channel);
 
                 if (channelList.length > 0) {
-                    return channelList[0](data);
+                    const result = channelList[0](data);
+                    logDebugger(channel, 'publishSync executing subscriber', '\nparams: ', data, '\nresult: ', result);
+                    return result;
                 }
 
                 return undefined;
@@ -79,7 +111,7 @@
                     const subscriberFunc = channelList[0];
 
                     queueList.map(async (queueObj) => {
-                        return queueHandler(subscriberFunc, queueObj);
+                        return queueHandler(subscriberFunc, queueObj, channel);
                     });
 
                     clearQueue(channel);
