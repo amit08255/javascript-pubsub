@@ -8,11 +8,9 @@
         const queue = {};
 
         function setDebugger(channel, value){
-            if(!channel){
-                return;
+            if(channel){
+                debug[channel] = value;
             }
-
-            debug[channel] = value;
         }
 
         async function logDebugger(channel, ...args){
