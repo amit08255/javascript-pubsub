@@ -8,6 +8,10 @@
         const queue = {};
 
         function setDebugger(channel, value){
+            if(!channel){
+                return;
+            }
+
             debug[channel] = value;
         }
 
