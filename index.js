@@ -16,11 +16,9 @@
         }
 
         async function logDebugger(channel, ...args){
-            if(debug[channel] !== true){
-                return;
+            if(debug[channel] === true){
+                console.log('[*] pubsub: ', channel, ...args);
             }
-
-            console.log('[*] pubsub: ', channel, ...args);
         }
 
         function getSubscribers(channel) {
