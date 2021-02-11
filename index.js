@@ -45,6 +45,7 @@
                 callback,
                 data,
             });
+            logDebugger(channel, 'task added to queue');
         }
 
         async function queueExecutor(subscriber, queueObj) {
