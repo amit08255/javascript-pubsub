@@ -209,9 +209,9 @@ Type: `function`
 
 Callback to be executed when the publish event is received. Data passed with `publish` and `publishAll` is passed to this function as parameter. The data returned by this function can be accessed using promise resolve callback, whereas error occurred can be accessed using promise reject callback. If you intentionally want to pass error from subscriber callback use code - `return Promise.reject("error data");`.
 
-### clearSubscribers(eventName)
+### unsubscribe(eventName)
 
-Clear all subscribers or subscribers linked to a specific channel/event.
+Clear all subscribers or subscribers linked to a specific channel/event. If channel/event name is not provided, all subscribers are cleared.
 
 ### clearTaskQueue(eventName)
 

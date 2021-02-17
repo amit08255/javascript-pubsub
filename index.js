@@ -78,9 +78,10 @@
                 debug = {};
                 return this;
             },
-            async clearSubscribers(channel = null) {
+            async unsubscribe(channel = null) {
+                logDebugger(channel, 'clearing subscribers');
+
                 if (channel) {
-                    logDebugger(channel, 'clearing subscribers');
                     channels[channel] = [];
                 }
 
