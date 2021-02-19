@@ -162,8 +162,9 @@ export default MyApp;
 ```js
 import React, {useEffect} from 'react';
 import pubsub from '../pubsub';
+import publishComponent from '../pubsub/react';
 
-const Card = pubsub.publishSync('components/card');
+const Card = publishComponent('components/card');
 
 const Homepage = () => {
     useEffect(() => {
@@ -282,6 +283,26 @@ Event published.
 ### clearDebugger()
 
 Clear all debugging. It returns pubsub object.
+
+## React APIs
+
+To help designing decoupled ReactJS application, the library provides `pubsub/react` module which allows you to safely render component with pubsub without any issue. The library includes default fallback component to prevent any issue if component subscriber is not registered.
+
+### publishComponent(channel, fallback)
+
+Get instance of component from pubsub subscriber. It returns function/class of react component which means component is not rendered so that you can store it in variable and render when required.
+
+#### channel
+
+Type: `string`
+
+Channel/event name where component subscriber is registered.
+
+#### fallback
+
+Type: `any`
+
+Optional fallback component to display if component subscriber is not found. It is used to prevent app from crashing. If not provided, the default fallback component is used.
 
 
 <!-- CONTRIBUTING -->
