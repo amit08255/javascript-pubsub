@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 // eslint-disable-next-line func-names
 (function (scope) {
     let pubsubInstance = null;
@@ -8,14 +9,14 @@
         let registered = {};
         const queue = {};
 
-        function setDebugger(channel, value){
-            if(channel){
+        function setDebugger(channel, value) {
+            if (channel) {
                 debug[channel] = value;
             }
         }
 
-        async function logDebugger(channel, ...args){
-            if(debug[channel] === true){
+        async function logDebugger(channel, ...args) {
+            if (debug[channel] === true) {
                 console.log('[*] pubsub: ', channel, ...args);
             }
         }
@@ -28,15 +29,14 @@
         function setSubscriber(channel, key, callback) {
             getSubscribers(channel);
 
-            if(registered[channel] === undefined){
+            if (registered[channel] === undefined) {
                 registered[channel] = {};
             }
 
-            if(registered[channel][key] !== undefined){
+            if (registered[channel][key] !== undefined) {
                 const index = registered[channel][key];
                 channels[channel][index] = callback;
-            }
-            else{
+            } else {
                 channels[channel].push(callback);
                 registered[channel][key] = channels[channel].length - 1;
             }
@@ -80,15 +80,15 @@
         }
 
         return {
-            withDebugging(channel){
+            withDebugging(channel) {
                 setDebugger(channel, true);
                 return this;
             },
-            endDebugging(channel){
+            endDebugging(channel) {
                 setDebugger(channel, false);
                 return this;
             },
-            clearDebugger(){
+            clearDebugger() {
                 debug = {};
                 return this;
             },
@@ -129,9 +129,7 @@
                 if (channelList.length > 0 && queueList.length > 0) {
                     const subscriberFunc = channelList[0];
 
-                    queueList.map(async (queueObj) => {
-                        return queueHandler(subscriberFunc, queueObj, channel);
-                    });
+                    queueList.map(async (queueObj) => queueHandler(subscriberFunc, queueObj, channel));
 
                     clearQueue(channel);
                     return true;
