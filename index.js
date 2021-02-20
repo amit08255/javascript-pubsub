@@ -5,6 +5,7 @@
     function Pubsub() {
         let debug = {};
         let channels = {};
+        let registered = {};
         const queue = {};
 
         function setDebugger(channel, value){
@@ -24,9 +25,22 @@
             return channels[channel];
         }
 
-        function setSubscriber(channel, callback) {
+        function setSubscriber(channel, key, callback) {
             getSubscribers(channel);
-            channels[channel].push(callback);
+
+            if(registered[channel] === undefined){
+                registered[channel] = {};
+            }
+
+            if(registered[channel][key] !== undefined){
+                const index = registered[channel][key];
+                channels[channel][index] = callback;
+            }
+            else{
+                channels[channel].push(callback);
+                registered[channel][key] = channels[channel].length - 1;
+            }
+
             logDebugger(channel, 'setting subscriber');
         }
 
@@ -83,9 +97,11 @@
 
                 if (channel) {
                     channels[channel] = [];
+                    registered[channel] = {};
                 }
 
-                channels = [];
+                channels = {};
+                registered = {};
             },
             async clearTaskQueue(channel) {
                 logDebugger(channel, 'clearing task queue');
@@ -123,8 +139,8 @@
 
                 return false;
             },
-            async subscribe(channel, callback) {
-                setSubscriber(channel, callback);
+            async subscribe(channel, callback, key = 'index') {
+                setSubscriber(channel, key, callback);
                 this.publish(channel);
             },
         };

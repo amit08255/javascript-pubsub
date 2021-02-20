@@ -194,9 +194,9 @@ export default Homepage;
 
 All API functions exists inside pubsub object such as - `pubsub.subscribe`.
 
-### subscribe(eventName, callback)
+### subscribe(eventName, callback, key)
 
-Allows subscribing to the event and executing the callback when an event is published.
+Allows subscribing to the event and executing the callback when an event is published. Key is used to prevent same subscriber from registering twice. By default the key is `index` when subscriber with same key is passed, the previous subscriber is replaced with new one.
 
 #### eventName
 
@@ -209,6 +209,12 @@ Event to subscribe to.
 Type: `function`
 
 Callback to be executed when the publish event is received. Data passed with `publish` and `publishAll` is passed to this function as parameter. The data returned by this function can be accessed using promise resolve callback, whereas error occurred can be accessed using promise reject callback. If you intentionally want to pass error from subscriber callback use code - `return Promise.reject("error data");`.
+
+#### key
+
+Type: `string`
+
+Used to identify subscriber in a channel to prevent duplicate subscriber from registering twice. The value is optional and default key is `index`, if you want to register multiple subscriber, all must have unique key.
 
 ### unsubscribe(eventName)
 
