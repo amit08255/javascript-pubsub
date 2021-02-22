@@ -292,7 +292,11 @@ Clear all debugging. It returns pubsub object.
 
 ## React APIs
 
-To help designing decoupled ReactJS application, the library provides `pubsub/react` module which allows you to safely render component with pubsub without any issue. The library includes default fallback component to prevent any issue if component subscriber is not registered.
+To help designing decoupled ReactJS application, the library provides `pubsub/react` module which allows you to safely render component with pubsub without any issue. The library includes default fallback component to prevent any issue if component subscriber is not registered. React APIs add two channels which allows access to error boundaries for React components.
+
+* `components/with-error-boundary` - Higher Order Component to render component with error boundaries.
+
+* `components/error-boundary` - React error boundary component to wrap around other components.
 
 ### publishComponent(channel, fallback)
 
@@ -310,6 +314,21 @@ Type: `any`
 
 Optional fallback component to display if component subscriber is not found. It is used to prevent app from crashing. If not provided, the default fallback component is used.
 
+### publishComponentSafe
+
+This function works same as `publishComponent` except that it wraps the target component with React error boundaries. It prevents app from crashing from any rendering error. It displays a fallback UI when error occurs.
+
+#### channel
+
+Type: `string`
+
+Channel/event name where component subscriber is registered.
+
+#### fallback
+
+Type: `any`
+
+Optional fallback component to display if component subscriber is not found. It is used to prevent app from crashing. If not provided, the default fallback component is used.
 
 <!-- CONTRIBUTING -->
 ## Contributing

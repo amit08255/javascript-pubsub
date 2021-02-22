@@ -129,7 +129,9 @@
                 if (channelList.length > 0 && queueList.length > 0) {
                     const subscriberFunc = channelList[0];
 
-                    queueList.map(async (queueObj) => queueHandler(subscriberFunc, queueObj, channel));
+                    queueList.map(async (queueObj) => (
+                        queueHandler(subscriberFunc, queueObj, channel)
+                    ));
 
                     clearQueue(channel);
                     return true;
