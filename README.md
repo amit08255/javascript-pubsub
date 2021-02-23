@@ -250,7 +250,7 @@ Type: `any`
 
 Data to be passed to subscriber callback.
 
-### publishSync(eventName, data)
+### publishSync(eventName, data, defaultValue)
 
 Run a task synchronously. Returns data provided by subscriber callback after task execution. When no subscriber is found, returns undefined. It can only be used with single subscriber, if multiple subscribers are added for same event, first one is used.
 
@@ -265,6 +265,12 @@ Event published.
 Type: `any`
 
 Data to be passed to subscriber callback.
+
+#### defaultValue
+
+Type: `any`
+
+Default data to be passed when no subscriber is found for channel/event.
 
 ### withDebugging(eventName)
 

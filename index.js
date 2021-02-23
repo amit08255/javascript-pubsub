@@ -107,7 +107,7 @@
                 logDebugger(channel, 'clearing task queue');
                 clearQueue(channel);
             },
-            publishSync(channel, data) {
+            publishSync(channel, data, defaultValue = undefined) {
                 const channelList = getSubscribers(channel);
 
                 if (channelList.length > 0) {
@@ -116,7 +116,7 @@
                     return result;
                 }
 
-                return undefined;
+                return defaultValue;
             },
             async publish(channel, callback = null, data = null) {
                 const channelList = getSubscribers(channel);
