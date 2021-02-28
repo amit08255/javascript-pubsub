@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 // eslint-disable-next-line func-names
 (function (scope) {
     let pubsubInstance = null;
@@ -5,16 +6,42 @@
     function Pubsub() {
         let debug = {};
         let channels = {};
+        let registered = {};
         const queue = {};
+
+        function setDebugger(channel, value) {
+            if (channel) {
+                debug[channel] = value;
+            }
+        }
+
+        async function logDebugger(channel, ...args) {
+            if (debug[channel] === true) {
+                console.log('[*] pubsub: ', channel, ...args);
+            }
+        }
 
         function getSubscribers(channel) {
             channels[channel] = channels[channel] || [];
             return channels[channel];
         }
 
-        function setSubscriber(channel, callback) {
+        function setSubscriber(channel, key, callback) {
             getSubscribers(channel);
-            channels[channel].push(callback);
+
+            if (registered[channel] === undefined) {
+                registered[channel] = {};
+            }
+
+            if (registered[channel][key] !== undefined) {
+                const index = registered[channel][key];
+                channels[channel][index] = callback;
+            } else {
+                channels[channel].push(callback);
+                registered[channel][key] = channels[channel].length - 1;
+            }
+
+            logDebugger(channel, 'setting subscriber');
         }
 
         function getQueue(channel) {
@@ -32,18 +59,7 @@
                 callback,
                 data,
             });
-        }
-
-        function setDebugger(channel, value){
-            debug[channel] = value;
-        }
-
-        async function logDebugger(channel, ...args){
-            if(debug[channel] !== true){
-                return;
-            }
-
-            console.log('[*] pubsub: ', channel, ...args);
+            logDebugger(channel, 'task added to queue');
         }
 
         async function queueExecutor(subscriber, queueObj) {
@@ -64,40 +80,48 @@
         }
 
         return {
-            withDebugging(channel){
+            withDebugging(channel) {
                 setDebugger(channel, true);
                 return this;
             },
-            endDebugging(channel){
+            endDebugging(channel) {
                 setDebugger(channel, false);
                 return this;
             },
-            clearDebugger(){
+            clearDebugger() {
                 debug = {};
                 return this;
             },
-            async clearSubscribers(channel = null) {
+            async unsubscribe(channel = null) {
+                logDebugger(channel, 'clearing subscribers');
+
                 if (channel) {
-                    logDebugger(channel, 'clearing subscribers');
                     channels[channel] = [];
+                    registered[channel] = {};
                 }
 
-                channels = [];
+                channels = {};
+                registered = {};
             },
             async clearTaskQueue(channel) {
                 logDebugger(channel, 'clearing task queue');
                 clearQueue(channel);
             },
-            publishSync(channel, data) {
+            publishSync(channel, data, defaultValue = undefined) {
                 const channelList = getSubscribers(channel);
 
                 if (channelList.length > 0) {
-                    const result = channelList[0](data);
-                    logDebugger(channel, 'publishSync executing subscriber', '\nparams: ', data, '\nresult: ', result);
-                    return result;
+                    try {
+                        const result = channelList[0](data);
+                        logDebugger(channel, 'publishSync executing subscriber', '\nparams: ', data, '\nresult: ', result);
+                        return { error: null, data: result };
+                    } catch (error) {
+                        logDebugger(channel, 'publishSync execution failed', '\nparams: ', data, '\nresult: ', error);
+                        return { error, data: defaultValue };
+                    }
                 }
 
-                return undefined;
+                return { error: null, data: defaultValue };
             },
             async publish(channel, callback = null, data = null) {
                 const channelList = getSubscribers(channel);
@@ -110,9 +134,9 @@
                 if (channelList.length > 0 && queueList.length > 0) {
                     const subscriberFunc = channelList[0];
 
-                    queueList.map(async (queueObj) => {
-                        return queueHandler(subscriberFunc, queueObj, channel);
-                    });
+                    queueList.map(async (queueObj) => (
+                        queueHandler(subscriberFunc, queueObj, channel)
+                    ));
 
                     clearQueue(channel);
                     return true;
@@ -120,8 +144,8 @@
 
                 return false;
             },
-            async subscribe(channel, callback) {
-                setSubscriber(channel, callback);
+            async subscribe(channel, callback, key = 'index') {
+                setSubscriber(channel, key, callback);
                 this.publish(channel);
             },
         };

@@ -1,7 +1,7 @@
 import React, {useEffect} from 'react';
-import pubsub from '../utilities/index';
+import {publishComponentSafe} from '../utilities/react';
 
-const Card = pubsub.publishSync('components/card');
+const Card = publishComponentSafe('components/card');
 
 const Homepage = () => {
     useEffect(() => {

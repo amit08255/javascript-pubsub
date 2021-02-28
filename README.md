@@ -252,7 +252,10 @@ Data to be passed to subscriber callback.
 
 ### publishSync(eventName, data, defaultValue)
 
-Run a task synchronously. Returns data provided by subscriber callback after task execution. When no subscriber is found, returns undefined. It can only be used with single subscriber, if multiple subscribers are added for same event, first one is used.
+Run a task synchronously. Returns data provided by subscriber callback after task execution. When no subscriber is found, returns undefined. It can only be used with single subscriber, if multiple subscribers are added for same event, first one is used. It returns a JSON object -
+```js
+{ error: errorData, data: dataValue }
+```
 
 #### eventName
 
@@ -300,9 +303,9 @@ Clear all debugging. It returns pubsub object.
 
 To help designing decoupled ReactJS application, the library provides `pubsub/react` module which allows you to safely render component with pubsub without any issue. The library includes default fallback component to prevent any issue if component subscriber is not registered. React APIs add two channels which allows access to error boundaries for React components.
 
-* `components/with-error-boundary` - Higher Order Component to render component with error boundaries.
+* `components/withErrorBoundary` - Higher Order Component to render component with error boundaries.
 
-* `components/error-boundary` - React error boundary component to wrap around other components.
+* `components/errorBoundary` - React error boundary component to wrap around other components.
 
 ### publishComponent(channel, fallback)
 

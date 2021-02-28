@@ -111,12 +111,17 @@
                 const channelList = getSubscribers(channel);
 
                 if (channelList.length > 0) {
-                    const result = channelList[0](data);
-                    logDebugger(channel, 'publishSync executing subscriber', '\nparams: ', data, '\nresult: ', result);
-                    return result;
+                    try {
+                        const result = channelList[0](data);
+                        logDebugger(channel, 'publishSync executing subscriber', '\nparams: ', data, '\nresult: ', result);
+                        return { error: null, data: result };
+                    } catch (error) {
+                        logDebugger(channel, 'publishSync execution failed', '\nparams: ', data, '\nresult: ', error);
+                        return { error, data: defaultValue };
+                    }
                 }
 
-                return defaultValue;
+                return { error: null, data: defaultValue };
             },
             async publish(channel, callback = null, data = null) {
                 const channelList = getSubscribers(channel);
